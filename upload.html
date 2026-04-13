@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Issue Certificate — CertChain</title>
+  <link rel="icon" href="./assets/images/icon.png"/>
+  <link rel="stylesheet" href="./css/loader.css"/>
+  <link href="./css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="css/main.css"/>
+  <script src="node_modules/web3/dist/web3.min.js"></script>
+  <script src="js/App.js"></script>
+  <script src="js/crypto-utils.js"></script>
+  <script src="js/qrcode.min.js"></script>
+</head>
+<body>
+<div class="loader-wraper"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved" style="color:#fff"></i></div>
+      <span class="brand-name">Cert<span class="hl">Chain</span></span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon" style="filter:invert(1)"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="upload.html">Issue</a></li>
+        <li class="nav-item"><a class="nav-link" href="verify.html">Verify</a></li>
+        <li class="nav-item"><a class="nav-link" href="delete.html">Revoke</a></li>
+        <li class="nav-item"><a class="nav-link" href="admin.html">Admin</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html">Team</a></li>
+      </ul>
+      <div class="d-flex gap-2">
+        <button id="loginButton" onclick="connect()" class="main-button">Connect Wallet</button>
+        <button id="logoutButton" onclick="disconnect()" class="main-button" style="background:var(--bg-3);border:1px solid var(--glass-b)">Disconnect</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-4">
+  <div class="alert alert-danger d-none mb-3">
+    MetaMask not detected. Install from <a href="https://metamask.io/download" target="_blank">metamask.io</a>
+  </div>
+
+  <!-- Page header -->
+  <div class="mb-4">
+    <div class="section-tag">Issue Certificate</div>
+    <h1 class="section-title">Upload & Register Certificate</h1>
+    <p style="color:var(--text-2);font-size:.9rem">Hash the document using Keccak-256, store on IPFS, and anchor on blockchain.</p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left: Wallet + Upload -->
+    <div class="col-lg-4">
+      <!-- Wallet Status -->
+      <div class="wallet-status mb-3">
+        <i class="fa-solid fa-circle-nodes icon"></i>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-bottom:12px">Wallet Status</div>
+        <div class="info"><i class="fa-solid fa-address-card"></i><span id="userAddress" style="color:var(--text-2)">Not connected</span></div>
+        <div class="info"><i class="fa-solid fa-building-columns"></i><span id="Exporter-info" style="color:var(--text-2)">—</span></div>
+        <div class="info"><i class="fa-solid fa-circle-nodes"></i><span id="network" style="color:var(--text-2)">—</span></div>
+        <div class="info"><i class="fa-brands fa-ethereum"></i><span id="userBalance" style="color:var(--text-2)">—</span></div>
+      </div>
+
+      <!-- Upload Box -->
+      <div class="data-upload">
+        <div class="file-drop-zone" id="drop-zone">
+          <input onchange="get_Sha3()" id="doc-file" type="file" accept="application/pdf,image/*"/>
+          <span class="drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></span>
+          <div class="drop-text">Drop certificate here or click to browse</div>
+          <div class="drop-sub">PDF, JPG, PNG accepted</div>
+          <div id="file-selected-name" style="font-size:.8rem;color:var(--accent-2);font-family:var(--font-mono);margin-top:8px;display:none"></div>
+        </div>
+        <span id="note" style="color:var(--text-3)"></span>
+        <img id="loader" src="files/loader.svg" alt="loading"/>
+        <input onclick="sendHash()" class="upload-button" type="button" value="Issue Certificate" id="upload_file_button"/>
+      </div>
+    </div>
+
+    <!-- Right: Feature panels + TX result -->
+    <div class="col-lg-8">
+
+      <!-- FEATURE 5: PDF Metadata -->
+      <div id="metadata-panel" class="feature-panel" style="display:none">
+        <div class="panel-header">
+          <i class="fa-solid fa-file-lines" style="color:var(--accent-2)"></i>
+          <span class="panel-title-text">Document Metadata</span>
+          <span class="feature-badge c">Feature 5 — Auto-extracted</span>
+        </div>
+        <div id="meta-grid" class="meta-grid"></div>
+      </div>
+
+      <!-- FEATURE 1 + 4: Dual Hash + Avalanche -->
+      <div id="hash-panel" class="feature-panel" style="display:none">
+        <div class="panel-header">
+          <i class="fa-solid fa-hashtag" style="color:var(--accent)"></i>
+          <span class="panel-title-text">Cryptographic Hash Comparison</span>
+          <span class="feature-badge">Feature 1</span>
+        </div>
+
+        <div class="hash-box keccak">
+          <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('keccak-val').textContent);this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
+          <span class="hash-label" style="color:var(--accent-2)">Keccak-256 — Stored on Blockchain</span>
+          <div class="hash-value" id="keccak-val">Computing...</div>
+          <div style="font-size:.72rem;color:var(--text-3);margin-top:6px">Used by Solidity/Ethereum. Sponge construction. Output: 256 bits. Identical math as your smart contract.</div>
+        </div>
+
+        <div class="hash-box sha256" style="margin-top:0">
+          <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('sha256-val').textContent);this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
+          <span class="hash-label" style="color:var(--warning)">SHA-256 — NIST Reference Standard</span>
+          <div class="hash-value" id="sha256-val">Computing...</div>
+          <div style="font-size:.72rem;color:var(--text-3);margin-top:6px">FIPS 180-4. Merkle-Damgård construction. Used in TLS, HTTPS, Bitcoin, JWT. Same 256-bit output, completely different math.</div>
+        </div>
+
+        <div id="hash-comparison" style="display:none;margin-top:10px;padding:10px 14px;background:var(--bg-3);border-radius:8px;font-size:.8rem;color:var(--text-2);border-left:3px solid var(--accent)">
+          <i class="fa-solid fa-circle-info" style="color:var(--accent);margin-right:6px"></i>
+          Same file → same output length (256 bits) → completely different hex values. This demonstrates that hash functions are <strong style="color:var(--text-1)">algorithm-specific one-way functions</strong>.
+        </div>
+
+        <!-- Feature 4: Avalanche -->
+        <div style="margin-top:20px;padding-top:18px;border-top:1px solid var(--glass-b)">
+          <div class="panel-header" style="margin-bottom:10px">
+            <i class="fa-solid fa-bolt" style="color:var(--accent-3)"></i>
+            <span class="panel-title-text" style="font-size:.875rem">Avalanche Effect Visualizer</span>
+            <span class="feature-badge p">Feature 4</span>
+          </div>
+          <div style="font-size:.8rem;color:var(--text-2);margin-bottom:12px">Simulating 1-character change. A cryptographically secure hash must flip ~50% of output bits (avalanche property).</div>
+          <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--text-3);margin-bottom:6px">
+            <span>Bits changed in Keccak-256 output</span>
+            <span id="avalanche-pct" style="color:var(--accent-3);font-weight:700">—</span>
+          </div>
+          <div class="avalanche-track">
+            <div class="avalanche-fill" id="avalanche-bar" style="width:0%"></div>
+          </div>
+          <div class="hex-grid" id="hex-grid"></div>
+          <div style="font-size:.72rem;color:var(--text-3);margin-top:8px;display:flex;gap:12px">
+            <span><span style="display:inline-block;width:10px;height:10px;background:var(--accent-3);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Changed</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:var(--bg-4);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Same</span>
+          </div>
+          <div id="avalanche-note" style="display:none;font-size:.8rem;color:var(--text-2);margin-top:10px;padding:10px 14px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--accent-3)"></div>
+        </div>
+      </div>
+
+      <!-- FEATURE 2: Digital Signature -->
+      <div id="signature-panel" class="feature-panel" style="display:none">
+        <div class="panel-header">
+          <i class="fa-solid fa-signature" style="color:var(--success)"></i>
+          <span class="panel-title-text">Digital Signature — ECDSA (secp256k1)</span>
+          <span class="feature-badge g">Feature 2</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-2);margin-bottom:14px">Sign the document hash with your MetaMask <strong style="color:var(--text-1)">private key</strong> using ECDSA on curve secp256k1. The 130-byte signature proves authorship without revealing the private key — this is <strong style="color:var(--text-1)">public-key cryptography</strong> in action.</p>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <button id="sign-btn" class="btn-sign" onclick="doSign()" disabled>
+            <i class="fa-solid fa-pen-nib"></i> Sign with MetaMask
+          </button>
+          <span style="font-size:.78rem;color:var(--text-3)">Optional but adds cryptographic proof of authorship</span>
+        </div>
+        <div id="sig-result" style="display:none;margin-top:14px">
+          <div style="font-size:.72rem;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">ECDSA Signature (r + s + v = 130 bytes)</div>
+          <div class="sig-value" id="sig-hex">—</div>
+          <div style="margin-top:10px;font-size:.82rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="color:var(--success);font-weight:700"><i class="fa-solid fa-check-circle"></i> Signed by:</span>
+            <span id="sig-signer" style="font-family:var(--font-mono);color:var(--accent-2);font-size:.78rem;word-break:break-all"></span>
+          </div>
+          <div style="font-size:.75rem;color:var(--text-3);margin-top:4px">Method: <span id="sig-method" style="color:var(--warning)"></span></div>
+          <input type="hidden" id="stored-signature"/>
+        </div>
+      </div>
+
+      <!-- Transaction Result (original structure kept) -->
+      <div class="transaction-status d-none my-3">
+        <div class="left" style="padding:22px 24px">
+          <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-bottom:14px">Transaction Details</div>
+          <span class="info" id="transaction-hash"></span>
+          <span class="info" id="file-hash"></span>
+          <span class="info" id="contract-address"></span>
+          <span class="info" id="time-stamps"></span>
+          <span class="info" id="blockNumber"></span>
+          <span class="info" id="blockHash"></span>
+          <span class="info" id="to-netowrk"></span>
+          <span class="info" id="gas-used"></span>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">
+            <a title="Download QR Code" href="#" id="download-link" class="download-link" download="QRCode.png"><i class="fa-solid fa-qrcode"></i> Download QR</a>
+            <a target="_blank" href="#" id="verfiy" class="download-link" style="border-color:rgba(108,99,255,.3)"><i class="fa-solid fa-shield-check"></i> Verify Now</a>
+          </div>
+        </div>
+        <div class="right">
+          <div id="qrcode" style="text-align:center"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent uploads -->
+<div class="latest-tx mt-3">
+  <h5 id="recent-header" class="recent-header-title" style="display:none">
+    Recent Certificates <i class="fa-solid fa-caret-down ms-2" style="color:var(--accent)"></i>
+  </h5>
+  <div class="loading-tx d-none text-center py-4"><img src="./files/tx-loading.svg" alt="" style="width:80px;opacity:.5"/></div>
+  <div class="transactions row gy-2 gx-4 justify-content-center px-4"></div>
+</div>
+
+<i onclick="topFunction()" id="scroll-btn" class="fa-solid fa-angle-up" style="display:flex"></i>
+<a href="mailto:devaloshe@gmail.com"><i class="mail-us fa-solid fa-headset"></i></a>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/aos.js"></script>
+<script src="./js/script.js"></script>
+</body>
+</html>
