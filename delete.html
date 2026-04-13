@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Revoke Certificate — CertChain</title>
+  <link rel="icon" href="./assets/images/icon.png"/>
+  <link rel="stylesheet" href="./css/loader.css"/>
+  <link href="./css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="css/main.css"/>
+  <script src="node_modules/web3/dist/web3.min.js"></script>
+  <script src="js/App.js"></script>
+</head>
+<body>
+<div class="loader-wraper"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved" style="color:#fff"></i></div>
+      <span class="brand-name">Cert<span class="hl">Chain</span></span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon" style="filter:invert(1)"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="upload.html">Issue</a></li>
+        <li class="nav-item"><a class="nav-link" href="verify.html">Verify</a></li>
+        <li class="nav-item"><a class="nav-link active" href="delete.html">Revoke</a></li>
+        <li class="nav-item"><a class="nav-link" href="admin.html">Admin</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html">Team</a></li>
+      </ul>
+      <div class="d-flex gap-2">
+        <button id="loginButton" onclick="connect()" class="main-button">Connect Wallet</button>
+        <button id="logoutButton" onclick="disconnect()" class="main-button" style="background:var(--bg-3);border:1px solid var(--glass-b)">Disconnect</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-4">
+  <div class="mb-4">
+    <div class="section-tag" style="color:var(--danger)">Authorized Exporters Only</div>
+    <h1 class="section-title">Revoke / Delete Certificate</h1>
+    <p style="color:var(--text-2);font-size:.9rem">Remove a certificate hash from the blockchain. Only the institution that issued it can delete it.</p>
+  </div>
+
+  <div class="row g-4 justify-content-center">
+    <div class="col-lg-5">
+      <div class="wallet-status mb-3">
+        <i class="fa-solid fa-circle-nodes icon"></i>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-bottom:12px">Connected Wallet</div>
+        <div class="info"><i class="fa-solid fa-address-card"></i><span id="userAddress" style="color:var(--text-2)">Not connected</span></div>
+        <div class="info"><i class="fa-solid fa-building-columns"></i><span id="Exporter-info" style="color:var(--text-2)">—</span></div>
+        <div class="info"><i class="fa-solid fa-circle-nodes"></i><span id="network" style="color:var(--text-2)">—</span></div>
+        <div class="info"><i class="fa-brands fa-ethereum"></i><span id="userBalance" style="color:var(--text-2)">—</span></div>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <div class="data-upload">
+        <div class="file-drop-zone">
+          <input onchange="get_Sha3()" id="doc-file" type="file"/>
+          <span class="drop-icon" style="color:var(--danger)"><i class="fa-solid fa-trash-can"></i></span>
+          <div class="drop-text">Select the certificate to revoke</div>
+          <div class="drop-sub">Only the issuing institution can delete</div>
+        </div>
+        <span id="note" style="color:var(--text-3)"></span>
+        <img id="loader" src="files/loader.svg" alt="loading" style="display:none"/>
+        <input onclick="deleteHash()" class="upload-button" type="button" value="Delete Certificate Hash"
+          id="upload_file_button" style="background:linear-gradient(135deg,var(--danger),#b71c1c);box-shadow:0 6px 24px rgba(255,82,82,.3)"/>
+      </div>
+
+      <div class="glass-card p-4 mt-3" style="border-left:3px solid var(--danger)">
+        <div style="font-size:.8rem;font-weight:700;color:var(--danger);margin-bottom:8px"><i class="fa-solid fa-triangle-exclamation me-2"></i>Important Notice</div>
+        <ul style="font-size:.82rem;color:var(--text-2);line-height:1.8;padding-left:16px;margin:0">
+          <li>Deletes the hash from the active verification mapping</li>
+          <li>The original transaction remains in blockchain history permanently</li>
+          <li>Only the exporter who issued it can delete it (smart contract enforced)</li>
+          <li>This action costs gas and requires MetaMask confirmation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a href="mailto:devaloshe@gmail.com"><i class="mail-us fa-solid fa-headset"></i></a>
+<i onclick="topFunction()" id="scroll-btn" class="fa-solid fa-angle-up" style="display:flex"></i>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/script.js"></script>
+</body>
+</html>
