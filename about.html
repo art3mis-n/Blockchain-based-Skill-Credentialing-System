@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Team — CertChain</title>
+  <link rel="icon" href="./assets/images/icon.png"/>
+  <link rel="stylesheet" href="./css/loader.css"/>
+  <link href="./css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="./css/aos.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="css/main.css"/>
+  <script src="node_modules/web3/dist/web3.min.js"></script>
+  <script src="js/App.js"></script>
+  <script src="js/aos.js"></script>
+</head>
+<body>
+<div class="loader-wraper"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved" style="color:#fff"></i></div>
+      <span class="brand-name">Cert<span class="hl">Chain</span></span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon" style="filter:invert(1)"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="upload.html">Issue</a></li>
+        <li class="nav-item"><a class="nav-link" href="verify.html">Verify</a></li>
+        <li class="nav-item"><a class="nav-link" href="delete.html">Revoke</a></li>
+        <li class="nav-item"><a class="nav-link" href="admin.html">Admin</a></li>
+        <li class="nav-item"><a class="nav-link active" href="about.html">Team</a></li>
+      </ul>
+      <div class="d-flex gap-2">
+        <button id="loginButton" onclick="connect()" class="main-button">Connect Wallet</button>
+        <button id="logoutButton" onclick="disconnect()" class="main-button" style="background:var(--bg-3);border:1px solid var(--glass-b)">Disconnect</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-5">
+  <div class="text-center mb-5" data-aos="fade-up">
+    <div class="section-tag">About</div>
+    <h1 class="section-title">The Team Behind CertChain</h1>
+    <p class="section-sub mx-auto">A Cryptography & Network Security project built with real blockchain technology.</p>
+  </div>
+
+  <div class="row justify-content-center g-4">
+    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="0">
+      <div class="people">
+        <div class="img-container">
+          <img src="./files/#U2014Pngtree#U2014user avatar boy_4693645.png" class="people-img" alt="Member"/>
+        </div>
+        <h1>Developer</h1>
+        <h6>Blockchain Engineer</h6>
+        <p class="about-me-text">Built the smart contract, frontend, and all cryptographic features including dual hashing, ECDSA signatures, and avalanche visualizer.</p>
+        <div class="social">
+          <a href="#"><i class="fa-brands fa-github"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+          <a href="#"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project info -->
+  <div class="row mt-5 g-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+      <div class="glass-card p-4">
+        <i class="fa-solid fa-file-code fa-2x mb-3" style="color:var(--accent)"></i>
+        <h5 style="font-family:var(--font-dis);font-weight:700;color:var(--text-1)">Smart Contract</h5>
+        <p style="font-size:.85rem;color:var(--text-2);line-height:1.7">Solidity contract with expiry, revocation, ECDSA signature storage, and backwards-compatible ABI.</p>
+      </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+      <div class="glass-card p-4">
+        <i class="fa-solid fa-lock fa-2x mb-3" style="color:var(--accent-2)"></i>
+        <h5 style="font-family:var(--font-dis);font-weight:700;color:var(--text-1)">Cryptography</h5>
+        <p style="font-size:.85rem;color:var(--text-2);line-height:1.7">Keccak-256, SHA-256, ECDSA secp256k1, avalanche effect, and EIP-712 typed signatures.</p>
+      </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+      <div class="glass-card p-4">
+        <i class="fa-solid fa-database fa-2x mb-3" style="color:var(--accent-3)"></i>
+        <h5 style="font-family:var(--font-dis);font-weight:700;color:var(--text-1)">Decentralized Storage</h5>
+        <p style="font-size:.85rem;color:var(--text-2);line-height:1.7">IPFS via Infura for certificate files. Content-addressed storage — CID is the SHA-256 of the file.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer-dark mt-4">
+  <div class="container">
+    <p class="copyright">© 2025 CertChain — Cryptography & Network Security Project</p>
+  </div>
+</footer>
+
+<a href="mailto:devaloshe@gmail.com"><i class="mail-us fa-solid fa-headset"></i></a>
+<i onclick="topFunction()" id="scroll-btn" class="fa-solid fa-angle-up" style="display:flex"></i>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/script.js"></script>
+</body>
+</html>
