@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>CertChain — Blockchain Certificate Verification</title>
+  <link rel="icon" href="./assets/images/icon.png"/>
+  <link rel="stylesheet" href="./css/loader.css"/>
+  <link href="./css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="./css/aos.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="css/main.css"/>
+  <script src="node_modules/web3/dist/web3.min.js"></script>
+  <script src="js/App.js"></script>
+</head>
+<body>
+<div class="loader-wraper"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+
+<!-- NAV -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved" style="color:#fff"></i></div>
+      <span class="brand-name">Cert<span class="hl">Chain</span></span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon" style="filter:invert(1)"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
+        <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="upload.html">Issue</a></li>
+        <li class="nav-item"><a class="nav-link" href="verify.html">Verify</a></li>
+        <li class="nav-item"><a class="nav-link" href="delete.html">Revoke</a></li>
+        <li class="nav-item"><a class="nav-link" href="admin.html">Admin</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html">Team</a></li>
+      </ul>
+      <div class="d-flex gap-2">
+        <button id="loginButton" onclick="connect()" class="main-button">Connect Wallet</button>
+        <button id="logoutButton" onclick="disconnect()" class="main-button" style="background:var(--bg-3);border:1px solid var(--glass-b)">Disconnect</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="home">
+  <video autoplay muted loop playsinline><source src="files/earth.mp4" type="video/mp4"/></video>
+  <div class="container home-content">
+    <div class="row align-items-center">
+      <div class="col-lg-7" data-aos="fade-right">
+        <div class="hero-badge"><span>Cryptography & Network Security</span></div>
+        <h1 class="hero-title">Tamper-Proof Certificate Verification<br/>on the <span class="gt">Blockchain</span></h1>
+        <p class="hero-sub">Issue, store, and verify academic certificates using Keccak-256 hashing, ECDSA digital signatures, and IPFS — no central authority required.</p>
+        <div class="hero-cta">
+          <a href="verify.html" class="btn-ph"><i class="fa-solid fa-shield-check"></i> Verify a Certificate</a>
+          <a href="upload.html" class="btn-sh"><i class="fa-solid fa-upload"></i> Issue Certificate</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num"><span class="purecounter" data-purecounter-start="0" data-purecounter-end="256" data-purecounter-duration="1">0</span><span>-bit</span></div>
+            <div class="stat-lbl">Hash Security</div>
+          </div>
+          <div>
+            <div class="stat-num"><span class="purecounter" data-purecounter-start="0" data-purecounter-end="100" data-purecounter-duration="1">0</span><span>%</span></div>
+            <div class="stat-lbl">Tamper-proof</div>
+          </div>
+          <div>
+            <div class="stat-num"><span class="purecounter" data-purecounter-start="0" data-purecounter-end="0" data-purecounter-duration="1">0</span><span>s</span></div>
+            <div class="stat-lbl">Verify Instantly</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-flex justify-content-center" data-aos="fade-left">
+        <div style="position:relative;width:100%;max-width:380px;height:420px">
+          <!-- Floating UI cards -->
+          <div style="position:absolute;top:20px;left:0;background:var(--bg-3);border:1px solid var(--glass-b);border-radius:16px;padding:16px 20px;box-shadow:var(--shadow);animation:float1 6s ease-in-out infinite">
+            <div style="font-size:.7rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Document Hash</div>
+            <div style="font-family:var(--font-mono);font-size:.72rem;color:var(--accent-2);word-break:break-all">0x8b3a4f2e...d9c71b</div>
+            <div style="margin-top:10px;display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;background:var(--success);border-radius:50%"></div><span style="font-size:.78rem;color:var(--success);font-weight:600">Keccak-256 Verified</span></div>
+          </div>
+          <div style="position:absolute;bottom:30px;right:0;background:var(--bg-3);border:1px solid var(--glass-b);border-radius:16px;padding:16px 20px;box-shadow:var(--shadow);animation:float2 6s ease-in-out infinite">
+            <div style="font-size:.7rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">ECDSA Signature</div>
+            <div style="font-family:var(--font-mono);font-size:.72rem;color:var(--accent-3);word-break:break-all">0x4d8f1c...a2e9</div>
+            <div style="margin-top:10px;display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;background:var(--accent);border-radius:50%"></div><span style="font-size:.78rem;color:var(--accent);font-weight:600">Issuer Authenticated</span></div>
+          </div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-2);border:1px solid rgba(108,99,255,.3);border-radius:20px;padding:24px;box-shadow:0 0 40px rgba(108,99,255,.2);animation:float3 6s ease-in-out infinite;text-align:center;width:160px">
+            <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff;margin:0 auto 12px"><i class="fa-solid fa-certificate"></i></div>
+            <div style="font-family:var(--font-dis);font-size:.85rem;font-weight:700;color:var(--text-1)">Certificate</div>
+            <div style="font-size:.72rem;color:var(--success);margin-top:4px;font-weight:600">● On-Chain</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+@keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+@keyframes float3{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(-10px)}}
+</style>
+
+<!-- HOW IT WORKS -->
+<section class="py-5" style="background:var(--bg-1)">
+  <div class="container py-4">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <div class="section-tag">How it works</div>
+      <h2 class="section-title">From Issuance to Verification<br/>in Seconds</h2>
+      <p class="section-sub mx-auto">A fully decentralized pipeline using blockchain, IPFS, and public-key cryptography.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="0">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-icon-wrap" style="background:rgba(108,99,255,.15)"><i class="fa-solid fa-building-columns" style="color:var(--accent)"></i></div>
+          <div class="step-title">Institution Registers</div>
+          <p class="step-desc">Admin adds institution wallet address to the smart contract. Only registered institutions can issue certificates.</p>
+        </div>
+      </div>
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-icon-wrap" style="background:rgba(0,212,255,.15)"><i class="fa-solid fa-fingerprint" style="color:var(--accent-2)"></i></div>
+          <div class="step-title">Document is Hashed</div>
+          <p class="step-desc">The certificate PDF is hashed using Keccak-256 in the browser. The hash — not the file — is stored on-chain, ensuring privacy.</p>
+        </div>
+      </div>
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-icon-wrap" style="background:rgba(255,107,157,.15)"><i class="fa-solid fa-link" style="color:var(--accent-3)"></i></div>
+          <div class="step-title">Hash Stored On-Chain</div>
+          <p class="step-desc">Hash + IPFS CID are sent to the smart contract via MetaMask. The transaction is permanent, public, and tamper-proof.</p>
+        </div>
+      </div>
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+        <div class="step-card">
+          <div class="step-num">04</div>
+          <div class="step-icon-wrap" style="background:rgba(0,230,118,.15)"><i class="fa-solid fa-shield-check" style="color:var(--success)"></i></div>
+          <div class="step-title">Anyone Can Verify</div>
+          <p class="step-desc">Upload the same document — the hash is recomputed and compared against the blockchain. No login, no central server needed.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CRYPTO FEATURES -->
+<section class="py-5" style="background:var(--bg-0)">
+  <div class="container py-4">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5" data-aos="fade-right">
+        <div class="section-tag">Cryptography</div>
+        <h2 class="section-title">Real CNS Concepts,<br/>Working in Production</h2>
+        <p class="section-sub">Every feature demonstrates a core cryptography principle from your syllabus — not just theory, but running code.</p>
+        <div class="mt-4" style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:40px;height:40px;background:rgba(108,99,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid fa-hashtag" style="color:var(--accent)"></i></div>
+            <div><div style="font-weight:700;font-size:.9rem;color:var(--text-1)">Keccak-256 + SHA-256 Comparison</div><div style="font-size:.82rem;color:var(--text-2);margin-top:2px">Both hashes computed live in browser — different algorithms, same 256-bit output, completely different values.</div></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:40px;height:40px;background:rgba(0,230,118,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid fa-pen-nib" style="color:var(--success)"></i></div>
+            <div><div style="font-weight:700;font-size:.9rem;color:var(--text-1)">ECDSA Digital Signatures</div><div style="font-size:.82rem;color:var(--text-2);margin-top:2px">Sign with MetaMask private key (secp256k1). Recover signer address on verify page — public-key crypto in action.</div></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:40px;height:40px;background:rgba(255,107,157,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid fa-bolt" style="color:var(--accent-3)"></i></div>
+            <div><div style="font-weight:700;font-size:.9rem;color:var(--text-1)">Avalanche Effect Visualizer</div><div style="font-size:.82rem;color:var(--text-2);margin-top:2px">Change 1 character → watch 50% of hash bits flip. Real-time bit-level comparison with color-coded hex grid.</div></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:40px;height:40px;background:rgba(0,212,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid fa-file-lines" style="color:var(--accent-2)"></i></div>
+            <div><div style="font-weight:700;font-size:.9rem;color:var(--text-1)">Certificate Expiry & Revocation</div><div style="font-size:.82rem;color:var(--text-2);margin-top:2px">Like TLS certificates — validity period enforced on-chain. Revocation flag with full audit timeline.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7" data-aos="fade-left">
+        <img src="./assets/images/work.jpg" alt="work" style="width:100%;border-radius:20px;opacity:.85;border:1px solid var(--glass-b)"/>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="py-5" style="background:var(--bg-1)">
+  <div class="container py-3 text-center">
+    <div class="section-tag" data-aos="fade-up">Technology Stack</div>
+    <h2 class="section-title mx-auto" style="max-width:500px" data-aos="fade-up">Built with Industry-Standard Technologies</h2>
+    <div class="row g-3 mt-4 justify-content-center">
+      <div class="col-6 col-md-2" data-aos="zoom-in" data-aos-delay="0">
+        <div class="glass-card p-3 text-center">
+          <i class="fa-brands fa-ethereum fa-2x mb-2" style="color:var(--accent)"></i>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-2)">Ethereum / Polygon</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-2" data-aos="zoom-in" data-aos-delay="50">
+        <div class="glass-card p-3 text-center">
+          <i class="fa-solid fa-file-code fa-2x mb-2" style="color:var(--accent-2)"></i>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-2)">Solidity</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-2" data-aos="zoom-in" data-aos-delay="100">
+        <div class="glass-card p-3 text-center">
+          <i class="fa-solid fa-database fa-2x mb-2" style="color:var(--accent-3)"></i>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-2)">IPFS</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-2" data-aos="zoom-in" data-aos-delay="150">
+        <div class="glass-card p-3 text-center">
+          <i class="fa-solid fa-key fa-2x mb-2" style="color:var(--warning)"></i>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-2)">MetaMask</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-2" data-aos="zoom-in" data-aos-delay="200">
+        <div class="glass-card p-3 text-center">
+          <i class="fa-solid fa-code fa-2x mb-2" style="color:var(--success)"></i>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-2)">Web3.js</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-2" data-aos="zoom-in" data-aos-delay="250">
+        <div class="glass-card p-3 text-center">
+          <i class="fa-solid fa-lock fa-2x mb-2" style="color:var(--accent)"></i>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-2)">Keccak/ECDSA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer-dark">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-5 mb-4 mb-md-0">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div class="brand-icon"><i class="fa-solid fa-shield-halved" style="color:#fff;font-size:14px"></i></div>
+          <span style="font-family:var(--font-dis);font-weight:700;color:var(--text-1)">Cert<span style="color:var(--accent-2)">Chain</span></span>
+        </div>
+        <p style="font-size:.85rem;color:var(--text-3);max-width:300px;line-height:1.6">Decentralized certificate verification using blockchain, IPFS, and cryptographic hashing. A CNS project.</p>
+      </div>
+      <div class="col-md-3 mb-4 mb-md-0">
+        <h3>Pages</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="upload.html">Issue Certificate</a></li>
+          <li><a href="verify.html">Verify Certificate</a></li>
+          <li><a href="admin.html">Admin Panel</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h3>Cryptography Used</h3>
+        <ul>
+          <li><a href="#">Keccak-256 Hashing</a></li>
+          <li><a href="#">SHA-256 Reference</a></li>
+          <li><a href="#">ECDSA Signatures</a></li>
+          <li><a href="#">IPFS Content Addressing</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© 2025 CertChain — Cryptography & Network Security Project · Built on Blockchain</p>
+  </div>
+</footer>
+
+<i onclick="topFunction()" id="scroll-btn" class="fa-solid fa-angle-up" style="display:flex"></i>
+<a title="Contact" href="mailto:devaloshe@gmail.com"><i class="mail-us fa-solid fa-headset"></i></a>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/aos.js"></script>
+<script src="./js/purecounter.min.js"></script>
+<script src="./js/script.js"></script>
+</body>
+</html>
