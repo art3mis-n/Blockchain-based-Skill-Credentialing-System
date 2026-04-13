@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin — CertChain</title>
+  <link rel="icon" href="./assets/images/icon.png"/>
+  <link rel="stylesheet" href="./css/loader.css"/>
+  <link href="./css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="css/main.css"/>
+  <script src="node_modules/web3/dist/web3.min.js"></script>
+  <script src="js/App.js"></script>
+</head>
+<body>
+<div class="loader-wraper"><div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved" style="color:#fff"></i></div>
+      <span class="brand-name">Cert<span class="hl">Chain</span></span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon" style="filter:invert(1)"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="upload.html">Issue</a></li>
+        <li class="nav-item"><a class="nav-link" href="verify.html">Verify</a></li>
+        <li class="nav-item"><a class="nav-link" href="delete.html">Revoke</a></li>
+        <li class="nav-item"><a class="nav-link active" href="admin.html">Admin</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html">Team</a></li>
+      </ul>
+      <div class="d-flex gap-2">
+        <button id="loginButton" onclick="connect()" class="main-button">Connect Wallet</button>
+        <button id="logoutButton" onclick="disconnect()" class="main-button" style="background:var(--bg-3);border:1px solid var(--glass-b)">Disconnect</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-4">
+  <div class="mb-4">
+    <div class="section-tag">Owner Only</div>
+    <h1 class="section-title">Admin Panel</h1>
+    <p style="color:var(--text-2);font-size:.9rem">Manage registered institutions. Only the contract owner can add, edit, or remove exporters.</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <!-- Wallet -->
+      <div class="wallet-status mb-3">
+        <i class="fa-solid fa-circle-nodes icon"></i>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-bottom:12px">Owner Wallet</div>
+        <div class="info"><i class="fa-solid fa-address-card"></i><span id="userAddress" style="color:var(--text-2)">Not connected</span></div>
+        <div class="info"><i class="fa-solid fa-building-columns"></i><span id="Exporter-info" style="color:var(--text-2)">—</span></div>
+        <div class="info"><i class="fa-solid fa-circle-nodes"></i><span id="network" style="color:var(--text-2)">—</span></div>
+        <div class="info"><i class="fa-brands fa-ethereum"></i><span id="userBalance" style="color:var(--text-2)">—</span></div>
+      </div>
+
+      <!-- Counters -->
+      <div class="row g-2 mb-3">
+        <div class="col-6"><div class="counter-card" id="num-exporters"><span class="counter-value">—</span><div class="counter-label">Institutions</div></div></div>
+        <div class="col-6"><div class="counter-card" id="num-hashes"><span class="counter-value">—</span><div class="counter-label">Certificates</div></div></div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="box p-4">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px">
+          <div style="width:44px;height:44px;background:linear-gradient(135deg,var(--accent),var(--accent-3));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff"><i class="fa-solid fa-user-shield"></i></div>
+          <div>
+            <div style="font-family:var(--font-dis);font-weight:700;color:var(--text-1)">Manage Institutions</div>
+            <div style="font-size:.78rem;color:var(--text-3)">Add, edit or remove authorized exporters</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">Institution Wallet Address</label>
+            <input id="Exporter-address" type="text" placeholder="0x..." onclick="this.value=window.userAddress||''"/>
+          </div>
+          <div>
+            <label style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">Institution Name</label>
+            <input id="info" type="text" placeholder="e.g., Anna University, Chennai"/>
+          </div>
+        </div>
+
+        <span id="note" style="display:block;margin-top:12px;min-height:24px"></span>
+        <img id="loader" src="files/loader.svg" alt="loading" style="width:60px;display:none;margin:8px auto;display:none"/>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+          <button id="ExporterBtn" onclick="addExporter()" class="upload-button" style="min-width:140px;height:44px;font-size:.875rem">
+            <i class="fa-solid fa-plus"></i> Add Institution
+          </button>
+          <button id="edit" onclick="editExporter()" class="upload-button" style="min-width:140px;height:44px;font-size:.875rem;background:linear-gradient(135deg,var(--warning),#e65100)">
+            <i class="fa-solid fa-pen"></i> Update
+          </button>
+          <button id="delete" onclick="deleteExporter()" class="upload-button" style="min-width:140px;height:44px;font-size:.875rem;background:linear-gradient(135deg,var(--danger),#b71c1c)">
+            <i class="fa-solid fa-trash"></i> Remove
+          </button>
+        </div>
+
+        <div style="margin-top:20px;padding:14px;background:var(--bg-3);border-radius:10px;border-left:3px solid var(--warning)">
+          <div style="font-size:.75rem;color:var(--warning);font-weight:700;margin-bottom:6px"><i class="fa-solid fa-triangle-exclamation me-2"></i>Owner Access Only</div>
+          <div style="font-size:.78rem;color:var(--text-2);line-height:1.6">All transactions require your wallet to be the contract owner. Non-owner transactions will be rejected by the smart contract modifier.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a href="mailto:devaloshe@gmail.com"><i class="mail-us fa-solid fa-headset"></i></a>
+<i onclick="topFunction()" id="scroll-btn" class="fa-solid fa-angle-up" style="display:flex"></i>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/script.js"></script>
+</body>
+</html>
